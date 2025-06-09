@@ -25,7 +25,7 @@ sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
 
 git checkout "$latest"
-mvn clean install -DskipTests -pl pinot-spi
+mvn clean install -DskipTests
 paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
 echo "$paths"
 IFS=' ' read -r -a namelist <<< "$paths"
@@ -36,7 +36,7 @@ done
 
 cd pinot || exit
 git checkout "$sndlatest"
-mvn clean install -DskipTests -pl pinot-spi
+mvn clean install -DskipTests
 paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
 echo "$paths2"
 IFS=' ' read -r -a namelist2 <<< "$paths2"
