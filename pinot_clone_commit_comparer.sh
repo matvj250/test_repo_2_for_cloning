@@ -10,7 +10,7 @@ mkdir commit_jars_old
 mkdir commit_jars_new
 
 git remote add remote_apache_pinot https://github.com/apache/pinot.git
-gh repo set-default remote_apache_pinot
+#gh repo set-default remote_apache_pinot
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 # below is seemingly the best way to get commits via github CLI
 commits="$(gh search commits repo:apache/pinot --committer-date=">1970-01-01" --sort committer-date --order desc --limit 2 --json sha)"
@@ -41,7 +41,7 @@ echo "$paths"
 #  mv "$name" commit_jars_old
 #done
 
-gh repo set-default matvj250/test_repo
+#gh repo set-default matvj250/test_repo
 git checkout main
 git remote remove remote_apache_pinot
 
