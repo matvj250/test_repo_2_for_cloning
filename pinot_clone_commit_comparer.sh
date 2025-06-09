@@ -27,6 +27,7 @@ sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
 git checkout "$latest"
 mvn clean install -DskipTests -pl pinot-spi
 paths="$(find . -type f -name "pinot/*${version}.jar" -print | tr "\n" " ")"
+echo "$paths"
 IFS=' ' read -r -a namelist <<< "$paths"
 cd ..
 for name in "${namelist[@]}"; do
@@ -37,6 +38,7 @@ cd pinot || exit
 git checkout "$sndlatest"
 mvn clean install -DskipTests -pl pinot-spi
 paths2="$(find . -type f -name "pinot/*${version}.jar" -print | tr "\n" " ")"
+echo "$paths2"
 IFS=' ' read -r -a namelist2 <<< "$paths2"
 cd ..
 for name in "${namelist2[@]}"; do
