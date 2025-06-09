@@ -11,7 +11,7 @@ mkdir commit_jars_new
 
 git clone --branch master --depth 2 https://github.com/apache/pinot.git
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
-IFS=' ' read -r -a hashlist <<< "log"
+IFS=' ' read -r -a hashlist <<< "$log"
 latest="${hashlist[0]}" # latest commit hash
 sndlatest="${hashlist[1]}"
 latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
@@ -42,7 +42,7 @@ echo "$paths"
 
 #gh repo set-default matvj250/test_repo
 cd ..
-git checkout main
+git branch --show-current
 
 #if [ ! -e japicmp.jar ]; then
 #  JAPICMP_VER=0.23.1
