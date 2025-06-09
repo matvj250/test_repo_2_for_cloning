@@ -9,7 +9,9 @@ fi
 mkdir commit_jars_old
 mkdir commit_jars_new
 
-git clone --branch master --depth 2 https://github.com/apache/pinot.git
+#git clone --branch master --depth 2 https://github.com/apache/pinot.git
+cd pinot || exit
+version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
 latest="${hashlist[0]}" # latest commit hash
@@ -20,9 +22,7 @@ echo "$latest_pr"
 sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
 
-cd pinot || exit
 git checkout "$latest"
-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 mvn clean install -DskipTests
 paths="$(find . -type f -name "*${version}.jar" | tr "\n" " ")"
 echo "$paths"
