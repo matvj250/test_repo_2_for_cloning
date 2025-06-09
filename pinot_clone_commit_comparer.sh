@@ -9,21 +9,20 @@ fi
 mkdir commit_jars_old
 mkdir commit_jars_new
 
-git remote add remote_apache_pinot https://github.com/apache/pinot.git
-#gh repo set-default remote_apache_pinot
-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
-# below is seemingly the best way to get commits via github CLI
-commits="$(gh search commits repo:apache/pinot --committer-date=">1970-01-01" --sort committer-date --order desc --limit 2 --json sha)"
-latest="$(echo "$commits" | jq '.[0].sha' | tr -d '"')" # latest commit hash
-sndlatest="$(echo "$commits" | jq '.[1].sha' | tr -d '"')"
+git clone --branch master --depth 2 https://github.com/apache/pinot.git
+log="$(git log --pretty=format:"%H" | tr "\n" " ")"
+IFS=' ' read -r -a hashlist <<< "log"
+latest="${hashlist[0]}" # latest commit hash
+sndlatest="${hashlist[1]}"
 latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
 echo "$latest_pr"
 sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
 
-git fetch remote_apache_pinot "$latest"
+cd pinot || exit
 git checkout "$latest"
+version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 mvn clean install -DskipTests
 paths="$(find . -type f -name "*${version}.jar" | tr "\n" " ")"
 echo "$paths"
@@ -42,8 +41,8 @@ echo "$paths"
 #done
 
 #gh repo set-default matvj250/test_repo
+cd ..
 git checkout main
-git remote remove remote_apache_pinot
 
 #if [ ! -e japicmp.jar ]; then
 #  JAPICMP_VER=0.23.1
