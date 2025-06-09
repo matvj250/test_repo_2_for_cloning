@@ -25,23 +25,23 @@ sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
 git checkout "$latest"
 mvn clean install -DskipTests
 paths="$(find . -type f -name "*${version}.jar" | tr "\n" " ")"
-echo "$paths"
-#IFS=' ' read -r -a namelist <<< "$paths"
-#for name in "${namelist[@]}"; do
-#  mv "$name" commit_jars_new
-#done
-#
-#git fetch remote_apache_pinot "$sndlatest"
-#git checkout "$sndlatest"
-#mvn clean install -DskipTests
-#paths2="$(find . -path ./commit_jars_new -prune -o -name "*${version}.jar" -type f -print | tr "\n" " ")"
-#IFS=' ' read -r -a namelist2 <<< "$paths2"
-#for name in "${namelist2[@]}"; do
-#  mv "$name" commit_jars_old
-#done
+IFS=' ' read -r -a namelist <<< "$paths"
+cd ..
+for name in "${namelist[@]}"; do
+  mv "pinot/$name" commit_jars_new
+done
+
+cd pinot || exit
+git checkout "$sndlatest"
+mvn clean install -DskipTests
+paths2="$(find . -path ./commit_jars_new -prune -o -name "*${version}.jar" -type f -print | tr "\n" " ")"
+IFS=' ' read -r -a namelist2 <<< "$paths2"
+cd ..
+for name in "${namelist2[@]}"; do
+  mv "pinot/$name" commit_jars_old
+done
 
 #gh repo set-default matvj250/test_repo
-cd ..
 git branch --show-current
 
 #if [ ! -e japicmp.jar ]; then
