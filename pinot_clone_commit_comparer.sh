@@ -9,7 +9,7 @@ fi
 mkdir commit_jars_old
 mkdir commit_jars_new
 
-git clone --branch master --depth 2 https://github.com/apache/pinot.git
+git clone --branch master --depth 5 https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
