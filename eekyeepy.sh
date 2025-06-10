@@ -1,9 +1,19 @@
 #!/bin/bash
+node -v
 
-latest=fe7086b1bfd053585feeb9cfe0aeaa90936958d7
-latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
-  -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
-gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]' > japicmp_"$latest_pr".json
+node parse_japicmp.js --input japicmp_16000.txt --output japicmp_16000.json
+
+#mkdir pinot
+#cd pinot
+#git init
+#git remote add origin https://github.com/apache/pinot.git
+#git fetch origin fe7086b1bfd053585feeb9cfe0aeaa90936958d7
+#git checkout FETCH_HEAD
+
+#latest=fe7086b1bfd053585feeb9cfe0aeaa90936958d7
+#latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
+#  -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
+#gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]' > japicmp_"$latest_pr".json
 
 # if [ -z "$( ls -A 'commit_jars_new' )" ]; then
 #     echo "Directory is empty"

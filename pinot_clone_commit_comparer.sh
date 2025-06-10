@@ -5,19 +5,16 @@ mkdir commit_jars_old
 mkdir commit_jars_new
 
 # clone only the last 2 commits of apache/pinot, since that's all we care about
-git clone --branch master --depth 10 https://github.com/apache/pinot.git
+git clone --branch master --depth 2 https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
-latest=fe7086b1bfd053585feeb9cfe0aeaa90936958d7
-#"${hashlist[0]}" # latest commit hash
-sndlatest=e21ba4adb9cea786ac9d2a3432f8eae5b531fc0a
-#"${hashlist[1]}"
+latest="${hashlist[0]}" # latest commit hash
+# fe7086b1bfd053585feeb9cfe0aeaa90936958d7
+sndlatest="${hashlist[1]}" #e21ba4adb9cea786ac9d2a3432f8eae5b531fc0a
 latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
-sndlatest_pr="$(gh api repos/apache/pinot/commits/"${sndlatest}"/pulls \
-  -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
 
 git checkout "$latest"
 mvn clean install -DskipTests
@@ -84,12 +81,12 @@ rm -rf .git
 cd ..
 rm -r pinot
 
-# remove temp directories
-#rm -r commit_jars_old
-#rm -r commit_jars_new
+remove temp directories
+rm -r commit_jars_old
+rm -r commit_jars_new
 
-"$(gh pr view $latest -R apache/pinot --json title,number,mergedAt,files,url)" > japicmp_"$latest_pr".json
+gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]' > japicmp_"$latest_pr".json
 
-node ./parse-japicmp.js \
+node parse_japicmp.js \
   --input japicmp_"$latest_pr".txt \
   --output japicmp_"$latest_pr".json
