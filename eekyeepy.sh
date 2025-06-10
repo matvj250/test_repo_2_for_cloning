@@ -1,10 +1,15 @@
 #!/bin/bash
 
- if [ -z "$( ls -A 'commit_jars_new' )" ]; then
-     echo "Directory is empty"
- else
-     echo "Directory is not empty"
- fi
+latest=fe7086b1bfd053585feeb9cfe0aeaa90936958d7
+latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
+  -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')"
+gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]' > japicmp_"$latest_pr".json
+
+# if [ -z "$( ls -A 'commit_jars_new' )" ]; then
+#     echo "Directory is empty"
+# else
+#     echo "Directory is not empty"
+# fi
 
 #cd pinot || exit
 #mkdir commit_jars_new

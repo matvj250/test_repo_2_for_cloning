@@ -5,7 +5,7 @@ mkdir commit_jars_old
 mkdir commit_jars_new
 
 # clone only the last 2 commits of apache/pinot, since that's all we care about
-git clone --branch master --depth 5 https://github.com/apache/pinot.git
+git clone --branch master --depth 10 https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
@@ -56,16 +56,15 @@ if [ ! -e japicmp.jar ]; then
     exit 1
   fi
 fi
-if [ ! -e japicmp_test_commit.txt ]; then
-  touch japicmp_test_commit.txt
+
+if [ ! -e japicmp_"$latest_pr".txt ]; then
+  touch japicmp_"$latest_pr".txt
 fi
-message="Comparing #${latest_pr} (https://github.com/apache/pinot/pull/${latest_pr}) against the last-merged PR #${sndlatest_pr} (https://github.com/apache/pinot/pull/${sndlatest_pr})"
-echo "$message" > japicmp_test_commit.txt
 for filename in commit_jars_new/*; do
   name="$(basename "$filename")"
   if [ ! -f commit_jars_old/"$name" ]; then
-    echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> japicmp_test.txt
-    echo "" >> japicmp_test_commit.txt
+    echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> japicmp_"$latest_pr".txt
+    echo "" >> japicmp_"$latest_pr".txt
     continue
   fi
   OLD=commit_jars_old/"$name"
@@ -76,7 +75,7 @@ for filename in commit_jars_new/*; do
     -a private \
     --no-annotations \
     --ignore-missing-classes \
-    --only-modified >> japicmp_test_commit.txt
+    --only-modified >> japicmp_"$latest_pr".txt
 done
 
 # "unclone" pinot
@@ -86,5 +85,11 @@ cd ..
 rm -r pinot
 
 # remove temp directories
-rm -r commit_jars_old
-rm -r commit_jars_new
+#rm -r commit_jars_old
+#rm -r commit_jars_new
+
+"$(gh pr view $latest -R apache/pinot --json title,number,mergedAt,files,url)" > japicmp_"$latest_pr".json
+
+node ./parse-japicmp.js \
+  --input japicmp_"$latest_pr".txt \
+  --output japicmp_"$latest_pr".json
