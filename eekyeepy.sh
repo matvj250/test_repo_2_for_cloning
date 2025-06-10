@@ -1,7 +1,12 @@
 #!/bin/bash
-node -v
+latest_pr=15973
 
-node parse_japicmp.js --input japicmp_16000.txt --output japicmp_16000.json
+metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
+
+node parse_japicmp.js \
+  --input japicmp_"$latest_pr".txt \
+  --metadata "$metadata" \
+  --output japicmp_"$latest_pr".json
 
 #mkdir pinot
 #cd pinot

@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * parse-japicmp.js
+ * parse_japicmp.js
  *
  * Reads a plain-text japicmp diff and outputs
  * a JSON report listing each modified class/interface,
  * whether it's compatible, and its added/removed methods and fields.
  *
  * Usage:
- *   node ./parse-japicmp.js \
+ *   node ./parse_japicmp.js \
  *   --input docs/data/japicmp/japicmp-15944.txt \
- *   --output docs/data/japicmp/japicmp-15944.json
+ *   --metadata [variable representing line of gh cli code]
+ *   --output docs/data/japicmp/japicmp-15944.json \
  */
 
 const fs = require('fs');
@@ -18,17 +19,20 @@ const path = require('path');
 const args = process.argv.slice(2);
 let inputPath;
 let outputPath;
+let metadata;
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--input' || args[i] === '-i') {
     inputPath = args[++i];
+  } else if (args[i] === '--metadata' || args[i] === '-m') {
+    metadata = args[++i];
   } else if (args[i] === '--output' || args[i] === '-o') {
     outputPath = args[++i];
   }
 }
 
-if (!inputPath) {
-  console.error('Usage: parse-japicmp.js --input <INPUT_PATH> [--output <OUTPUT_PATH>]');
+if (!inputPath || !metadata) {
+  console.error('Usage: parse_japicmp.js --input <INPUT_PATH> --metadata <METADATA> [--output <OUTPUT_PATH>]');
   process.exit(1);
 }
 
@@ -94,13 +98,13 @@ for (const line of lines) {
   // }
 }
 
-const report = { jcmpClasses: classes };
+const report = { ...JSON.parse(metadata), jcmpClasses: classes };
 const outJson = JSON.stringify(report, null, 2);
 
 if (outputPath) {
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.appendFileSync(outputPath, outJson, 'utf8');
+  fs.writeFileSync(outputPath, outJson, 'utf8');
   console.log(`Wrote JSON report to ${outputPath}`);
 } else {
   console.log(outJson);
