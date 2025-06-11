@@ -46,23 +46,64 @@ const lines = content.split(/\r?\n/);
 
 const classes = [];
 let current = null;
+let names = [];
 
 for (const line of lines) {
-  // Header: ***! MODIFIED CLASS/INTERFACE: ... (not serializable)
-  const headerMatch = line.match(/^\*+!?\s+MODIFIED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
-  if (headerMatch) {
-    const fullNamePart = headerMatch[1].trim();
+  // Example header: ***! MODIFIED CLASS/INTERFACE: ... (not serializable)
+  const modifMatch = line.match(/^\*+!?\s+MODIFIED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
+  const newMatch = line.match(/^\++!?\s+NEW (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
+  const removeMatch = line.match(/^-+!?\s+REMOVED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
+  // if (modifMatch || newMatch || removeMatch) {
+  //   names = [];
+  // }
+  if (modifMatch) {
+    const fullNamePart = modifMatch[1].trim();
     const parts = fullNamePart.split(/\s+/);
     const className = parts[parts.length - 1];
     current = {
       className,
+      type: "modification",
       compatible: true,
       removedMethods: [],
       addedMethods: [],
       removedFields: [],
-      addedFields: []//,
-      // removedClasses: [],
-      // addedClasses: []
+      addedFields: [],
+      removedConstructors: [],
+      addedConstructors: []
+    };
+    classes.push(current);
+    continue;
+  } else if (newMatch) {
+    const fullNamePart = newMatch[1].trim();
+    const parts = fullNamePart.split(/\s+/);
+    const className = parts[parts.length - 1];
+    current = {
+      className,
+      type: "addition",
+      compatible: true,
+      removedMethods: [],
+      addedMethods: [],
+      removedFields: [],
+      addedFields: [],
+      removedConstructors: [],
+      addedConstructors: []
+    };
+    classes.push(current);
+    continue;
+  } else if (removeMatch) {
+    const fullNamePart = removeMatch[1].trim();
+    const parts = fullNamePart.split(/\s+/);
+    const className = parts[parts.length - 1];
+    current = {
+      className,
+      type: "deletion",
+      compatible: false,
+      removedMethods: [],
+      addedMethods: [],
+      removedFields: [],
+      addedFields: [],
+      removedConstructors: [],
+      addedConstructors: []
     };
     classes.push(current);
     continue;
@@ -88,14 +129,15 @@ for (const line of lines) {
     current.addedFields.push(match[1].trim());
     continue;
   }
-  // if (match = line.match(/REMOVED CLASS:\s*(.*)/)) {
-  //   current.addedFields.push(match[1].trim());
-  //   continue;
-  // }
-  // if (match = line.match(/NEW CLASS:\s*(.*)/)) {
-  //   current.addedFields.push(match[1].trim());
-  //   continue;
-  // }
+  if (match = line.match(/REMOVED CONSTRUCTOR:\s*(.*)/)) {
+    current.removedConstructors.push(match[1].trim());
+    current.compatible = false;
+    continue;
+  }
+  if (match = line.match(/NEW CONSTRUCTOR:\s*(.*)/)) {
+    current.addedConstructors.push(match[1].trim());
+    continue;
+  }
 }
 
 const report = { ...JSON.parse(metadata), jcmpClasses: classes };

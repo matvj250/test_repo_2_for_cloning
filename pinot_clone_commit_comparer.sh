@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#TODO: github token and imports
 # make temp directories
 mkdir commit_jars_old
 mkdir commit_jars_new
