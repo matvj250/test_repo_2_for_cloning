@@ -10,9 +10,11 @@ cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
-latest=ba48afd3095264509de95378b2ccc2a3e47c3e7f
+latest=f085e2b6a4a3bb114cac7b86be272437873a11f8
+#ba48afd3095264509de95378b2ccc2a3e47c3e7f
 # "${hashlist[0]}" # latest commit hash
-sndlatest=a61acb71b634da10e637b61fc76e0b8aaa142659
+sndlatest=3d228aa301d404fac9b3ce173d34c0417addb359
+#a61acb71b634da10e637b61fc76e0b8aaa142659
 #"${hashlist[1]}" #e21ba4adb9cea786ac9d2a3432f8eae5b531fc0a
 latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
