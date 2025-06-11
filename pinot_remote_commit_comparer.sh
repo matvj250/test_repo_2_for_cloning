@@ -19,7 +19,7 @@ latest_pr="$(gh api repos/apache/pinot/commits/"${latest}"/pulls \
   -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
 
 git fetch origin "$latest"
-git checkout FETCH_HEAD
+git checkout "$latest"
 mvn clean install -DskipTests
 paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
 IFS=' ' read -r -a namelist <<< "$paths"
@@ -30,7 +30,7 @@ done
 
 cd pinot || exit
 git fetch origin "$sndlatest"
-git checkout FETCH_HEAD
+git checkout "$sndlatest"
 mvn clean install -DskipTests
 paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
 IFS=' ' read -r -a namelist2 <<< "$paths2"
