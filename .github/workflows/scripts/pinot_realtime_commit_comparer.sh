@@ -2,7 +2,7 @@
 
 # get count of commits from last 30 minutes
 current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
-stime=$(date -j -v-6H -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
+stime=$(date -j -v-5H -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
 # do a shallow clone. if there are no commits, exit the script
 git clone --branch master --shallow-since="$stime" https://github.com/apache/pinot.git || \
  { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
@@ -27,7 +27,8 @@ if [ ! -e japicmp.jar ]; then
 fi
 firstpair=true
 
-for i in $( seq 0 "${#hashlist[@]}" ); do
+temp="${#hashlist[@]}"-1
+for i in $( seq 0 "$temp" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ $firstpair ]]; then
