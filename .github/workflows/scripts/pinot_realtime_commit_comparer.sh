@@ -12,6 +12,7 @@ log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
 
 # make temp directories, download japicmp, and set boolean
+cd ..
 mkdir commit_jars_old
 mkdir commit_jars_new
 if [ ! -e japicmp.jar ]; then
@@ -30,6 +31,7 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ $firstpair ]]; then
+    cd pinot || exit
     git checkout "${hashlist[i]}"
     mvn clean install -DskipTests
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
@@ -61,12 +63,12 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
   fi
 
   # below block of code generates japicmp report
-  touch ../../../data/japicmp/pr-"$latest_pr".txt
+  touch data/japicmp/pr-"$latest_pr".txt
   for filename in commit_jars_new/*; do
     name="$(basename "$filename")"
     if [ ! -f commit_jars_old/"$name" ]; then
-      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> ../../../data/japicmp/pr-"$latest_pr".txt
-      echo "" >> ../../../data/japicmp/pr-"$latest_pr".txt
+      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> data/japicmp/pr-"$latest_pr".txt
+      echo "" >> data/japicmp/pr-"$latest_pr".txt
       continue
     fi
     OLD=commit_jars_old/"$name"
@@ -77,15 +79,15 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
       -a private \
       --no-annotations \
       --ignore-missing-classes \
-      --only-modified >> ../../../data/japicmp/pr-"$latest_pr".txt
+      --only-modified >> data/japicmp/pr-"$latest_pr".txt
   done
 
   # create json
   metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
   node parse_japicmp.js \
-    --input ../../../data/japicmp/pr-"$latest_pr".txt \
+    --input data/japicmp/pr-"$latest_pr".txt \
     --metadata "$metadata" \
-    --output ../../../data/output/pr-"$latest_pr".json
+    --output data/output/pr-"$latest_pr".json
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
