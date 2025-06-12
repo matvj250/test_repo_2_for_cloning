@@ -27,8 +27,7 @@ if [ ! -e japicmp.jar ]; then
 fi
 firstpair=true
 
-temp="${#hashlist[@]}"-1
-for i in $( seq 0 "$temp" ); do
+for i in $( seq 0 "${#hashlist[@]}" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ $firstpair ]]; then
