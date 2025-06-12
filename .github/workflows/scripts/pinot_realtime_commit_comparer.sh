@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # get count of commits from last 30 minutes
-stime=$(date - d "$1 - 2 hours")
+time1=$(date)
+stime=$(date - d "$time1- 2 hours")
 # do a shallow clone. if there are no commits, exit the script
 git clone --branch master --shallow-since="$stime" https://github.com/apache/pinot.git || \
  { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
