@@ -9,9 +9,9 @@
  *
  * Usage:
  *   node ./parse_japicmp.js \
- *   --input docs/data/japicmp/japicmp-15944.txt \
+ *   --input data/japicmp/pr-15944.txt \
  *   --metadata [variable representing line of gh cli code]
- *   --output docs/data/japicmp/japicmp-15944.json \
+ *   --output data/output/pr-15944.json \
  */
 
 const fs = require('fs');
@@ -53,9 +53,6 @@ for (const line of lines) {
   const modifMatch = line.match(/^\*+!?\s+MODIFIED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
   const newMatch = line.match(/^\++!?\s+NEW (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
   const removeMatch = line.match(/^-+!?\s+REMOVED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
-  // if (modifMatch || newMatch || removeMatch) {
-  //   names = [];
-  // }
   if (modifMatch) {
     const fullNamePart = modifMatch[1].trim();
     const parts = fullNamePart.split(/\s+/);
