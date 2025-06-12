@@ -60,12 +60,12 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
   fi
 
   # below block of code generates japicmp report
-  touch japicmp_"$latest_pr".txt
+  touch ../../../data/japicmp/pr-"$latest_pr".txt
   for filename in commit_jars_new/*; do
     name="$(basename "$filename")"
     if [ ! -f commit_jars_old/"$name" ]; then
-      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> japicmp_"$latest_pr".txt
-      echo "" >> japicmp_"$latest_pr".txt
+      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> ../../../data/japicmp/pr-"$latest_pr".txt
+      echo "" >> ../../../data/japicmp/pr-"$latest_pr".txt
       continue
     fi
     OLD=commit_jars_old/"$name"
@@ -76,15 +76,15 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
       -a private \
       --no-annotations \
       --ignore-missing-classes \
-      --only-modified >> japicmp_"$latest_pr".txt
+      --only-modified >> ../../../data/japicmp/pr-"$latest_pr".txt
   done
 
   # create json
   metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
   node parse_japicmp.js \
-    --input japicmp_"$latest_pr".txt \
+    --input ../../../data/japicmp/pr-"$latest_pr".txt \
     --metadata "$metadata" \
-    --output japicmp_"$latest_pr".json
+    --output ../../../data/output/pr-"$latest_pr".json
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
