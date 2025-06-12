@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # get count of commits from last 30 minutes
-current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
-stime=$(date -j -v-5H -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
+#current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
+#stime=$(date -j -v-5H -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
 # do a shallow clone. if there are no commits, exit the script
-git clone --branch master --shallow-since="$stime" https://github.com/apache/pinot.git || \
- { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
+git clone --branch master --depth 2 https://github.com/apache/pinot.git
+#git clone --branch master --shallow-since="$stime" https://github.com/apache/pinot.git || \
+# { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
