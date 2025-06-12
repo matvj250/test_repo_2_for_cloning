@@ -1,0 +1,35 @@
+name: Regular PR Change Collection
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" #every 30 minutes
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - name: Get current date
+        id: datetime
+        run: echo "current_datetime=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+      - name: Install GitHub CLI
+        uses: actions/setup-gh@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate manifest.json
+        run: npm run build
+      - name: Run report+json generator process
+        run: |
+          ./pinot_clone_commit_comparer.sh "$current_datetime"
+#      - name: Configure GitHub Pages
+#        uses: actions/configure-pages@v3
+#      - name: Upload Pages artifact
+#        uses: actions/upload-pages-artifact@v1
+#        with:
+#          path: ./data
+#      - name: Deploy to GitHub Pages
+#        uses: actions/deploy-pages@v1

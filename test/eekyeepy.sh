@@ -1,13 +1,17 @@
 #!/bin/bash
-latest_pr=15844
-#15973
 
-metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
+current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
+time2=$(date -j -v-30M -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
+echo $time2
+git clone --branch master --shallow-since="$time2" https://github.com/apache/pinot.git || { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
+cd pinot || exit
+git log --pretty=format:"%H"
+rm -rf .git
+cd ..
+rm -r pinot
 
-node parse_japicmp.js \
-  --input japicmp_"$latest_pr".txt \
-  --metadata "$metadata" \
-  --output japicmp_"$latest_pr"_revised.json
+# commit_count="$(gh search commits repo:apache/pinot --committer-date=">${stime}" --sort committer-date --order desc --limit 50 --json sha --jq length)"
+#touch ../commit_jars_new/test.txt
 
 #mkdir pinot
 #cd pinot
