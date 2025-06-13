@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Get current date
         id: datetime
-        run: echo "current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+        run: echo "current_datetime_minus_30m=$(date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
       - name: Check out code
         uses: actions/checkout@v3
       - name: Set up Node.js
