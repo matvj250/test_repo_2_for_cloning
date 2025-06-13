@@ -1,5 +1,10 @@
 #!/bin/bash
 
+current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
+# do a shallow clone. if there are no commits, exit the script
+commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)
+echo $((commitcount + 5))
+
 current_datetime=$(date -u +"%Y-%m-%dT%H:%M:%SZ") #-d "-30 minutes"
 #stime=$(
 date -v-30M -f "$current_datetime"

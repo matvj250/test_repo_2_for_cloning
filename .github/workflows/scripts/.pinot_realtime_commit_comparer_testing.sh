@@ -1,15 +1,14 @@
 #!/bin/bash
 
-# get count of commits from last 30 minutes
-current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
-stime=$(date -v-5H -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
+current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
 # do a shallow clone. if there are no commits, exit the script
-commitcount=$(gh api repos/apache/pinot/commits --jq '.[] | select(.commit.committer.date >= "$stime")' | wc -l)
+commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)
+
 if [[ commitcount -eq 0 ]]; then
-  echo "There have just been no commits in the past 30 minutes."
-  exit 1
+  echo "There have been no commits in the past 30 minutes."
+  exit 0
 fi
-git clone --branch master --depth "$commitcount"+1 https://github.com/apache/pinot.git
+git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
@@ -103,8 +102,8 @@ done
 cd pinot || exit
 rm -rf .git
 cd ..
-rm -r pinot
+rm -rf pinot
 
 # remove temp directories
-rm -r commit_jars_old
-rm -r commit_jars_new
+rm -rf commit_jars_old
+rm -rf commit_jars_new
