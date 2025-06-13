@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # do a shallow clone. if there are no commits, exit the script
+echo $1
 git clone --branch master --shallow-since="$1" https://github.com/apache/pinot.git || \
  { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 0; }
 cd pinot || exit
