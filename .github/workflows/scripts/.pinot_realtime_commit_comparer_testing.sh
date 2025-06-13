@@ -1,8 +1,9 @@
 #!/bin/bash
 
-current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
+echo $1
+#current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
 # do a shallow clone. if there are no commits, exit the script
-commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)
+commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
 
 if [[ commitcount -eq 0 ]]; then
   echo "There have been no commits in the past 30 minutes."
@@ -28,12 +29,11 @@ if [ ! -e japicmp.jar ]; then
     exit 1
   fi
 fi
-firstpair=true
 
 for i in $( seq 0 "${#hashlist[@]}" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
-  if [[ $firstpair ]]; then
+  if [[ i -eq 0 ]]; then
     cd pinot || exit
     git checkout "${hashlist[i]}"
     mvn clean install -DskipTests
@@ -43,7 +43,6 @@ for i in $( seq 0 "${#hashlist[@]}" ); do
     for name in "${namelist[@]}"; do
       mv "pinot/$name" commit_jars_new # move them into folder in the base repo
     done
-    firstpair=false
   fi
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i]}"/pulls \
         -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number

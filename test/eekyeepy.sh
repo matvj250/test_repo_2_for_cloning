@@ -1,16 +1,17 @@
 #!/bin/bash
 
-current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
-# do a shallow clone. if there are no commits, exit the script
-commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)
-echo $((commitcount + 5))
+for i in $( seq 0 3 ); do
+  # we're only running mvn clean install twice for a PR at the beginning
+  # since afterwards, we'll always have one of the two sets of jars downloaded already
+  if [[ i -eq 0 ]]; then
+    echo "hi there $i"
+  fi
+  echo "hello there $i"
+done
 
-current_datetime=$(date -u +"%Y-%m-%dT%H:%M:%SZ") #-d "-30 minutes"
-#stime=$(
-date -v-30M -f "$current_datetime"
-# do a shallow clone. if there are no commits, exit the script
-#commitcount=$(gh api repos/apache/pinot/commits --jq '.[] | select(.commit.committer.date >= '"$stime"')' | wc -l)
-#echo "$commitcount"+1
+#current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
+#commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)
+#echo $((commitcount + 5))
 
 #current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
 #time2=$(date -j -v-30M -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
