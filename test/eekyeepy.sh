@@ -1,37 +1,43 @@
 #!/bin/bash
+latest_pr=16066
+metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
+  node parse_japicmp.js \
+    --input data/japicmp/pr-"$latest_pr".txt \
+    --metadata "$metadata" \
+    --output data/output/pr-"$latest_pr".json
 
-echo $1
-#current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
-# do a shallow clone. if there are no commits, exit the script
-#commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
+#echo $1
+##current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
+## do a shallow clone. if there are no commits, exit the script
+##commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
+##
+##if [[ commitcount -eq 0 ]]; then
+##  echo "There have been no commits in the past 30 minutes."
+##  exit 0
+##fi
+##git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
+#cd pinot || exit
+#version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
+#log="$(git log --pretty=format:"%H" | tr "\n" " ")"
+#IFS=' ' read -r -a hashlist <<< "$log"
 #
-#if [[ commitcount -eq 0 ]]; then
-#  echo "There have been no commits in the past 30 minutes."
-#  exit 0
-#fi
-#git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
-cd pinot || exit
-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
-log="$(git log --pretty=format:"%H" | tr "\n" " ")"
-IFS=' ' read -r -a hashlist <<< "$log"
-
-echo "${#hashlist[@]}"
-echo "${hashlist[3]}"
-echo "${hashlist[4]}"
-
-# make temp directories, download japicmp, and set boolean
-cd ..
-
-for i in $( seq 1 "${#hashlist[@]}" ); do
-  # we're only running mvn clean install twice for a PR at the beginning
-  # since afterwards, we'll always have one of the two sets of jars downloaded already
-  if [[ i -eq 1 ]]; then
-    echo "$i"
-    echo "${hashlist[i-1]}"
-  fi
-  echo "$i"
-  echo "${hashlist[i]}"
-done
+#echo "${#hashlist[@]}"
+#echo "${hashlist[3]}"
+#echo "${hashlist[4]}"
+#
+## make temp directories, download japicmp, and set boolean
+#cd ..
+#
+#for i in $( seq 1 "${#hashlist[@]}" ); do
+#  # we're only running mvn clean install twice for a PR at the beginning
+#  # since afterwards, we'll always have one of the two sets of jars downloaded already
+#  if [[ i -eq 1 ]]; then
+#    echo "$i"
+#    echo "${hashlist[i-1]}"
+#  fi
+#  echo "$i"
+#  echo "${hashlist[i]}"
+#done
 
 #rm -rf pinot
 

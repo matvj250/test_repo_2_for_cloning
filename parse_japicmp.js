@@ -50,9 +50,9 @@ let names = [];
 
 for (const line of lines) {
   // Example header: ***! MODIFIED CLASS/INTERFACE: ... (not serializable)
-  const modifMatch = line.match(/^\*+!?\s+MODIFIED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
-  const newMatch = line.match(/^\++!?\s+NEW (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
-  const removeMatch = line.match(/^-+!?\s+REMOVED (?:CLASS|INTERFACE):\s+(.+?)\s+\(/);
+  const modifMatch = line.match(/^\*+!?\s+MODIFIED (?:CLASS|INTERFACE|ENUM):\s+(.+?)\s+\(/);
+  const newMatch = line.match(/^\++!?\s+NEW (?:CLASS|INTERFACE|ENUM):\s+(.+?)\s+\(/);
+  const removeMatch = line.match(/^-+!?\s+REMOVED (?:CLASS|INTERFACE|ENUM):\s+(.+?)\s+\(/);
   if (modifMatch) {
     const fullNamePart = modifMatch[1].trim();
     const parts = fullNamePart.split(/\s+/);
