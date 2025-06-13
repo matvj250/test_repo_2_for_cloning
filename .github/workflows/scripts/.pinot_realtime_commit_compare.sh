@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo $1
-# do a shallow clone. if there are no commits, exit the script
+# get count of commits from last 30 minutes. if there are no commits, exit the script
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
-
 if [[ commitcount -eq 0 ]]; then
   echo "There have been no commits in the past 30 minutes."
   exit 0
 fi
+
+# need # of commits + 1 to get the "old commit" for the earliest new commit
 git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
@@ -29,6 +29,7 @@ if [ ! -e japicmp.jar ]; then
   fi
 fi
 
+# length - 1 because the final entry of the array is just a space
 arrlen=${#hashlist[@]}
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
@@ -60,6 +61,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     mv "pinot/$name" commit_jars_old
   done
 
+  # fail process if either temp directory doesn't have files, meaning something went wrong
   if [ -z "$( ls -A 'commit_jars_new' )" ]; then
       echo "The jars for the latest PR were not collected properly. Please investigate the cause of this."
       exit 1

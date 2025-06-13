@@ -14,8 +14,6 @@ jobs:
         run: echo "current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
       - name: Check out code
         uses: actions/checkout@v3
-#      - name: Install GitHub CLI
-#        uses: actions/setup-gh@v3
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -26,4 +24,6 @@ jobs:
 #        run: npm run build
       - name: Run report+json generator process
         run: |
-          .github/workflows/scripts/.pinot_realtime_commit_comparer_testing.sh "$current_datetime_minus_30m"
+          .github/workflows/scripts/.pinot_realtime_commit_compare.sh "$current_datetime_minus_30m"
+        env:
+          GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}
