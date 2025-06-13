@@ -44,7 +44,7 @@ for i in $( seq 1 "${#hashlist[@]}" ); do
       mv "pinot/$name" commit_jars_new # move them into folder in the base repo
     done
   fi
-  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i]}"/pulls \
+  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
         -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   cd pinot || exit
   git checkout "${hashlist[i]}"
