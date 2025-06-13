@@ -1,13 +1,48 @@
 #!/bin/bash
 
-for i in $( seq 0 3 ); do
+echo $1
+#current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
+# do a shallow clone. if there are no commits, exit the script
+#commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
+#
+#if [[ commitcount -eq 0 ]]; then
+#  echo "There have been no commits in the past 30 minutes."
+#  exit 0
+#fi
+#git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
+cd pinot || exit
+version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
+log="$(git log --pretty=format:"%H" | tr "\n" " ")"
+IFS=' ' read -r -a hashlist <<< "$log"
+
+echo "${#hashlist[@]}"
+echo "${hashlist[3]}"
+echo "${hashlist[4]}"
+
+# make temp directories, download japicmp, and set boolean
+cd ..
+
+for i in $( seq 1 "${#hashlist[@]}" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
-  if [[ i -eq 0 ]]; then
-    echo "hi there $i"
+  if [[ i -eq 1 ]]; then
+    echo "$i"
+    echo "${hashlist[i-1]}"
   fi
-  echo "hello there $i"
+  echo "$i"
+  echo "${hashlist[i]}"
 done
+
+#rm -rf pinot
+
+#for i in $( seq 0 3 ); do
+#  # we're only running mvn clean install twice for a PR at the beginning
+#  # since afterwards, we'll always have one of the two sets of jars downloaded already
+#  if [[ i -eq 0 ]]; then
+#    echo "hi there $i"
+#  fi
+#  echo "hello there $i"
+#done
 
 #current_datetime_minus_30m=$(date -u -v-3H +"%Y-%m-%dT%H:%M:%SZ")
 #commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$current_datetime_minus_30m\")" | wc -l)

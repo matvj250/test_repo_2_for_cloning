@@ -30,7 +30,8 @@ if [ ! -e japicmp.jar ]; then
   fi
 fi
 
-for i in $( seq 1 "${#hashlist[@]}" ); do
+arrlen=${#hashlist[@]}
+for i in $( seq 1 "$((arrlen - 1))" ); do
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
