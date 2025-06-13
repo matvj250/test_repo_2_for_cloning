@@ -26,4 +26,4 @@ jobs:
 #        run: npm run build
       - name: Run report+json generator process
         run: |
-          /scripts/.pinot_clone_commit_comparer.sh "$current_datetime"
+          /scripts/.pinot_realtime_commit_comparer.sh "$current_datetime"
