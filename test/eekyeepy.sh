@@ -1,14 +1,21 @@
 #!/bin/bash
 
-current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
-time2=$(date -j -v-30M -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
-echo $time2
-git clone --branch master --shallow-since="$time2" https://github.com/apache/pinot.git || { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
-cd pinot || exit
-git log --pretty=format:"%H"
-rm -rf .git
-cd ..
-rm -r pinot
+current_datetime=$(date -u +"%Y-%m-%dT%H:%M:%SZ") #-d "-30 minutes"
+#stime=$(
+date -v-30M -f "$current_datetime"
+# do a shallow clone. if there are no commits, exit the script
+#commitcount=$(gh api repos/apache/pinot/commits --jq '.[] | select(.commit.committer.date >= '"$stime"')' | wc -l)
+#echo "$commitcount"+1
+
+#current_datetime=$(date '+%Y-%m-%d %H:%M:%S') #-d "-30 minutes"
+#time2=$(date -j -v-30M -f '%Y-%m-%d %H:%M:%S' "$current_datetime" '+%Y-%m-%d %H:%M:%S')
+#echo $time2
+#git clone --branch master --shallow-since="$time2" https://github.com/apache/pinot.git || { echo "Error: Failed to clone repository. It's most likely that there have just been no commits in the past 30 minutes."; exit 1; }
+#cd pinot || exit
+#git log --pretty=format:"%H"
+#rm -rf .git
+#cd ..
+#rm -r pinot
 
 # commit_count="$(gh search commits repo:apache/pinot --committer-date=">${stime}" --sort committer-date --order desc --limit 50 --json sha --jq length)"
 #touch ../commit_jars_new/test.txt
