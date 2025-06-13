@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo $1
-#current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
 # do a shallow clone. if there are no commits, exit the script
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
 
@@ -32,6 +31,12 @@ fi
 
 arrlen=${#hashlist[@]}
 for i in $( seq 1 "$((arrlen - 1))" ); do
+  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
+          -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
+  if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
+    echo "The change report for this PR already exists. Please avoid generating multiple change reports for the same PR."
+    exit 1
+  fi
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
@@ -45,8 +50,6 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
       mv "pinot/$name" commit_jars_new # move them into folder in the base repo
     done
   fi
-  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
-        -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   cd pinot || exit
   git checkout "${hashlist[i]}"
   mvn clean install -DskipTests
