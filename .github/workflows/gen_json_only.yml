@@ -2,7 +2,7 @@ name: JSON Conversion
 
 on:
   schedule:
-    - cron: "*/14000 * * * *" #every 30 minutes
+    - cron: "0 0 1 * *" #every 30 minutes
 
 jobs:
   json-conver:
