@@ -9,14 +9,26 @@ fi
 
 # need # of commits + 1 to get the "old commit" for the earliest new commit
 git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
+# clone this repo for
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
-
-echo ${hashlist[@]} #TWMPORARY
-# make temp directories, download japicmp, and set boolean
 cd ..
+
+# get repo and other steps
+if [ ! "$(git config --global user.name "github-actions[bot]")" ]; then
+  echo "Error occurred during git config command."
+  exit 1
+fi
+if [ ! "$(git config --global user.email "github-actions[bot]@users.noreply.github.com")" ]; then
+  echo "Error occurred during git config command."
+  exit 1
+fi
+
+git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
+
+# make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
 mkdir commit_jars_new
 if [ ! -e japicmp.jar ]; then
@@ -32,13 +44,17 @@ fi
 
 # length - 1 because the final entry of the array is just a space
 arrlen=${#hashlist[@]}
+prnames=()
+filenames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
+  cd temp_repo || exit
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
     echo "The change report for this PR already exists. Please avoid generating multiple change reports for the same PR."
     exit 1
   fi
+  cd ..
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
@@ -72,12 +88,12 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   fi
 
   # below block of code generates japicmp report
-  touch data/japicmp/pr-"$latest_pr".txt
+  touch pr-"$latest_pr".txt
   for filename in commit_jars_new/*; do
     name="$(basename "$filename")"
     if [ ! -f commit_jars_old/"$name" ]; then
-      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> data/japicmp/pr-"$latest_pr".txt
-      echo "" >> data/japicmp/pr-"$latest_pr".txt
+      echo "It seems $name does not exist in the previous pull request. Please make sure this is intended." >> pr-"$latest_pr".txt
+      echo "" >> pr-"$latest_pr".txt
       continue
     fi
     OLD=commit_jars_old/"$name"
@@ -88,7 +104,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
       -a private \
       --no-annotations \
       --ignore-missing-classes \
-      --only-modified >> data/japicmp/pr-"$latest_pr".txt
+      --only-modified >> pr-"$latest_pr".txt
   done
 
   # create json
@@ -98,14 +114,30 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --metadata "$metadata" \
     --output data/output/pr-"$latest_pr".json
 
+  prnames+=("$latest_pr")
+  filenames+=(pr-"$latest_pr".txt)
+  filenames+=(pr-"$latest_pr".json)
+
+  cd temp_repo || exit
+  cp ../pr-"$latest_pr".txt data/japicmp
+  cp ../pr-"$latest_pr".json data/japicmp
+  cd ..
+
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
   rm -r commit_jars_new/*
   mv commit_jars_old/*  commit_jars_new
 done
 
-# "unclone" pinot
+cd temp_repo || exit
+git add "${filenames[@]}"
+git commit -m "Adding files for" "${prnames[@]}"
+git push origin main
+cd ..
+
+# "unclone" repos
 rm -rf pinot
+rm -rf temp_repo
 
 # remove temp directories
 rm -rf commit_jars_old
