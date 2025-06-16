@@ -1,10 +1,13 @@
 #!/bin/bash
-latest_pr=16066
-metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
-  node parse_japicmp.js \
-    --input data/japicmp/pr-"$latest_pr".txt \
-    --metadata "$metadata" \
-    --output data/output/pr-"$latest_pr".json
+
+gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l
+
+#latest_pr=16066
+#metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
+#  node parse_japicmp.js \
+#    --input data/japicmp/pr-"$latest_pr".txt \
+#    --metadata "$metadata" \
+#    --output data/output/pr-"$latest_pr".json
 
 #echo $1
 ##current_datetime_minus_30m=$(date -u -v-4H +"%Y-%m-%dT%H:%M:%SZ")
