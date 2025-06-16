@@ -2,7 +2,7 @@ name: date test
 
 on:
   schedule:
-    - cron: "*/5 * * * *" #every 4 minutes
+    - cron: "0 0 1 1 0"
 
 jobs:
   commit-compare:
