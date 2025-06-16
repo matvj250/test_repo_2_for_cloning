@@ -2,7 +2,7 @@ name: Regular Commit Comparison Generator
 
 on:
   schedule:
-    - cron: "*/30 * * * *" #every 30 minutes
+    - cron: "17/30 * * * *" #every 30 minutes at 17th minute of hour
 
 jobs:
   commit-compare:
