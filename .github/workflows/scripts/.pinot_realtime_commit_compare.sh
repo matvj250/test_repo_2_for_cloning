@@ -14,6 +14,7 @@ version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr 
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
 
+echo ${hashlist[@]} #TWMPORARY
 # make temp directories, download japicmp, and set boolean
 cd ..
 mkdir commit_jars_old
