@@ -43,8 +43,8 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   cd temp_repo || exit
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
-    echo "The change report for this PR already exists. Please avoid generating multiple change reports for the same PR."
-    exit 1
+    echo "The change report for this PR already exists. The workflow will continue and just skip the process for this one."
+    continue
   fi
   cd ..
   # we're only running mvn clean install twice for a PR at the beginning
@@ -102,18 +102,16 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   # create json
   metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
   node parse_japicmp.js \
-    --input data/japicmp/pr-"$latest_pr".txt \
+    --input pr-"$latest_pr".txt \
     --metadata "$metadata" \
-    --output data/output/pr-"$latest_pr".json
+    --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  filenames+=(pr-"$latest_pr".txt)
-  filenames+=(pr-"$latest_pr".json)
+  filenames+=("pr-$latest_pr.txt")
+  filenames+=("pr-$latest_pr.json")
 
-  cd temp_repo || exit
-  cp ../pr-"$latest_pr".txt data/japicmp
-  cp ../pr-"$latest_pr".json data/japicmp
-  cd ..
+  mv ../pr-"$latest_pr".txt temp_repo/data/japicmp
+  mv ../=pr-"$latest_pr".json temp_repo/data/output
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
@@ -121,11 +119,13 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   mv commit_jars_old/*  commit_jars_new
 done
 
-cd temp_repo || exit
-git add "${filenames[@]}"
-git commit -m "Adding files for" "${prnames[@]}"
-git push origin main
-cd ..
+if [[ ${#filenames[@]} -ne 0 ]]; then
+  cd temp_repo || exit
+  git add "${filenames[@]}"
+  git commit -m "Adding files for ${prnames[*]}"
+  git push origin main
+  cd ..
+fi
 
 # "unclone" repos
 rm -rf pinot
