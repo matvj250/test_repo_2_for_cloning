@@ -1,4 +1,4 @@
-name: Regular PR Change Collection
+name: date test
 
 on:
   schedule:
