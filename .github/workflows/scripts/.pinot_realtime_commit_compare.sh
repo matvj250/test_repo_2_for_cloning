@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # get count of commits from last 30 minutes. if there are no commits, exit the script
+echo $1
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
 if [[ commitcount -eq 0 ]]; then
   echo "There have been no commits in the past 30 minutes."
@@ -16,16 +17,7 @@ log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
 cd ..
 
-# get repo and other steps
-if [ ! "$(git config --global user.name "github-actions[bot]")" ]; then
-  echo "Error occurred during git config command."
-  exit 1
-fi
-if [ ! "$(git config --global user.email "github-actions[bot]@users.noreply.github.com")" ]; then
-  echo "Error occurred during git config command."
-  exit 1
-fi
-
+# get current repo and other steps
 git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
 
 # make temp directories, download japicmp, and set boolean
