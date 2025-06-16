@@ -12,7 +12,7 @@ jobs:
       - name: Get current date
         id: datetime
 #        run: date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ"
-        run: echo "current_datetime_minus_30m=$(date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+        run: echo "current_datetime_minus_30m=$(date -u --date="2 hours ago" +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
       - name: Check out code
         uses: actions/checkout@v3
       - name: test
