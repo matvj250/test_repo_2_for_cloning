@@ -2,7 +2,7 @@ name: Regular PR Change Collection
 
 on:
   schedule:
-    - cron: "0 */4 * * *" #every 30 minutes
+    - cron: "0 0 1 * *" #every 30 minutes
 
 jobs:
   commit-compare:
