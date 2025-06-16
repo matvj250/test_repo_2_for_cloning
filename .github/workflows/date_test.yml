@@ -1,0 +1,17 @@
+name: Regular PR Change Collection
+
+on:
+  schedule:
+    - cron: "*/2 * * * *" #every 4 minutes
+
+jobs:
+  commit-compare:
+    runs-on: ubuntu-latest
+    name: Commit Comparer
+    steps:
+      - name: Get current date
+        id: datetime
+        run: date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ"
+#        run: echo "current_datetime_minus_30m=$(date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+#      - name: Check out code
+#        uses: actions/checkout@v3
