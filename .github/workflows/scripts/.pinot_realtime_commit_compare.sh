@@ -53,6 +53,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     cd pinot || exit
     git checkout "${hashlist[i-1]}"
     mvn clean install -DskipTests -q
+    echo "$i mvn clean done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
     IFS=' ' read -r -a namelist <<< "$paths"
     cd ..
@@ -63,6 +64,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   cd pinot || exit
   git checkout "${hashlist[i]}"
   mvn clean install -DskipTests -q
+  echo "${i+1} mvn clean done"
   paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
   IFS=' ' read -r -a namelist2 <<< "$paths2"
   cd ..
@@ -109,9 +111,10 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   prnames+=("$latest_pr")
   filenames+=("pr-$latest_pr.txt")
   filenames+=("pr-$latest_pr.json")
+  echo "current file name list:" "{filenames[@]}"
 
-  mv ../pr-"$latest_pr".txt temp_repo/data/japicmp
-  mv ../=pr-"$latest_pr".json temp_repo/data/output
+  mv pr-"$latest_pr".txt temp_repo/data/japicmp
+  mv pr-"$latest_pr".json temp_repo/data/output
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
@@ -119,7 +122,11 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   mv commit_jars_old/*  commit_jars_new
 done
 
+# check here to avoid code running when everything created overlaps with preexisting files
+# this should never be necessary, but it's good to be safe
 if [[ ${#filenames[@]} -ne 0 ]]; then
+  git config --global user.name "github-actions[bot]"
+  git config --global user.email "github-actions[bot]@users.noreply.github.com"
   cd temp_repo || exit
   git add "${filenames[@]}"
   git commit -m "Adding files for ${prnames[*]}"
