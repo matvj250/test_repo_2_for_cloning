@@ -1,0 +1,35 @@
+name: Regular Commit Comparison Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      startDate:
+        description: "Start date in UTC for commit range. (required)"
+        required: true
+      endDate:
+        description: "End date in UTC for commit range. (required)"
+        required: true
+
+jobs:
+  commit-compare:
+    runs-on: ubuntu-latest
+    name: Commit Comparer
+    steps:
+#      - name: Get current date
+#        id: datetime
+#        run: echo "current_datetime_minus_1h=$(date -u --date="1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+#      - name: Install dependencies
+#        run: npm ci
+#      - name: Generate manifest.json
+#        run: npm run build
+      - name: Run report+json generator process
+        run: |
+          .github/workflows/scripts/.pinot_backfill_commit_compare.sh ${{ github.event.inputs.startDate }} ${{ github.event.inputs.endDate }}
+        env:
+          GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}

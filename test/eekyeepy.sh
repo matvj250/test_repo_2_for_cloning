@@ -1,6 +1,22 @@
 #!/bin/bash
 
-gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l
+commits=$(gh api repos/apache/pinot/commits --jq '.[] | select(.commit.committer.date >= "2025-06-13T12:00:00Z") | select(.commit.committer.date <= "2025-06-16T13:00:00Z") | .sha' | tr "\n" " ")
+IFS=' ' read -r -a hashlist <<< "$commits"
+commitcount="${#hashlist[@]}"
+echo $commitcount
+if [[ commitcount -eq 0 ]]; then
+  echo "There have been no commits in the past 30 minutes."
+  exit 0
+fi
+
+# check out entire repo
+cd pinot || exit
+baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
+hashlist+=("$baseline")
+cd ..
+echo "${#hashlist[@]}"
+
+#gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l
 
 #latest_pr=16066
 #metadata=$(gh pr view "$latest_pr" -R apache/pinot --json title,number,mergedAt,files,url -q '.files |= [.[] | .path]')
