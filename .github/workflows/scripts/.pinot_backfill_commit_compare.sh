@@ -17,7 +17,7 @@ version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr 
 baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
 hashlist+=("$baseline")
 cd ..
-#echo "${hashlist[*]}"
+echo "${hashlist[*]}"
 
 # get current repo and other steps
 git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
