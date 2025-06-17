@@ -17,10 +17,10 @@ version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr 
 baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
 hashlist+=("$baseline")
 cd ..
-echo "commits being processed: " "${hashlist[*]}"
+echo "commits being processed:" "${hashlist[*]}"
 
 # get current repo and other steps
-git clone --branch main --depth 1 https://x-access-token:${GH_TOKEN}@github.com/test_repo_2_for_cloning.git temp_repo
+git clone --branch main --depth 1 https://x-access-token:${GH_TOKEN}@github.com/matvj250/test_repo_2_for_cloning.git temp_repo
 
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
