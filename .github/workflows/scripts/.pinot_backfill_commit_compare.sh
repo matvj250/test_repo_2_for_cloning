@@ -40,7 +40,7 @@ fi
 arrlen=${#hashlist[@]}
 prnames=()
 filenames=()
-for i in $( seq 1 "$arrlen" ); do
+for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   cd temp_repo || exit

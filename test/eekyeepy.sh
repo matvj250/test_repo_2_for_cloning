@@ -1,19 +1,28 @@
 #!/bin/bash
 
-commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"2025-06-16T23:00:00Z\") | select(.commit.committer.date <= \"2025-06-17T00:00:00Z\") | .sha")
-IFS=' ' read -r -a hashlist <<< "$commits"
-commitcount="${#hashlist[@]}"
-if [[ commitcount -eq 0 ]]; then
-  echo "There have been no commits in the past 30 minutes."
-  exit 0
-fi
+#for i in $( seq 1 1 ); do
+#  echo "$i"
+#done
 
-# check out entire repo
-cd pinot || exit
-baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
-echo "$baseline"
-hashlist+=("$baseline")
-cd ..
+temp=$((1+2))
+echo "it's time to""$temp"
+
+#commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"2025-06-16T23:00:00Z\") | select(.commit.committer.date <= \"2025-06-17T00:00:00Z\") | .sha")
+#IFS=' ' read -r -a hashlist <<< "$commits"
+#commitcount="${#hashlist[@]}"
+#if [[ commitcount -eq 0 ]]; then
+#  echo "There have been no commits in the past 30 minutes."
+#  exit 0
+#fi
+#
+## check out entire repo
+#cd pinot || exit
+#baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
+#echo "$baseline"
+#hashlist+=("$baseline")
+#cd ..
+#
+#echo ${#hashlist[@]}
 
 #gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l
 

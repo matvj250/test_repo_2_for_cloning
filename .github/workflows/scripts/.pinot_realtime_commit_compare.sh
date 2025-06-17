@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # get count of commits from last 30 minutes. if there are no commits, exit the script
-echo $1
+echo "$1"
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
 if [[ commitcount -eq 0 ]]; then
   echo "There have been no commits in the past 30 minutes."
@@ -10,7 +10,6 @@ fi
 
 # need # of commits + 1 to get the "old commit" for the earliest new commit
 git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
-# clone this repo for
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
@@ -34,7 +33,6 @@ if [ ! -e japicmp.jar ]; then
   fi
 fi
 
-# length - 1 because the final entry of the array is just a space
 arrlen=${#hashlist[@]}
 prnames=()
 filenames=()
