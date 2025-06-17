@@ -40,7 +40,7 @@ fi
 arrlen=${#hashlist[@]}
 prnames=()
 filenames=()
-for i in $( seq 1 "$((arrlen - 1))" ); do
+for i in $( seq 1 "$arrlen" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   cd temp_repo || exit
@@ -56,7 +56,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     cd pinot || exit
     git checkout "${hashlist[i-1]}"
     mvn clean install -DskipTests -q
-    echo "$i mvn clean done"
+    echo "$i""mvn clean done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
     IFS=' ' read -r -a namelist <<< "$paths"
     cd ..
@@ -112,8 +112,8 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  filenames+=("data/japicmp/" "pr-$latest_pr.txt")
-  filenames+=("data/output/" "pr-$latest_pr.json")
+  filenames+=("data/japicmp/""pr-$latest_pr.txt")
+  filenames+=("data/output/""pr-$latest_pr.json")
   echo "current file name list:" "${filenames[@]}"
 
   mv pr-"$latest_pr".txt temp_repo/data/japicmp
@@ -134,7 +134,8 @@ if [[ ${#filenames[@]} -ne 0 ]]; then
   cd temp_repo || exit
   git add .
   git commit -m "Adding files for PRs ${prnames[*]}"
-  git push origin main --repo=git@github.com:matvj250/test_repo_2_for_cloning.git
+  git remote rm origin
+  git remote add origin 'git@github.com:matvj250/test_repo_2_for_cloning.git'
   cd ..
 fi
 
