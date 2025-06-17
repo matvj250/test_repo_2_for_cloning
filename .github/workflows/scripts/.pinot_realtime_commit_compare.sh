@@ -44,6 +44,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   cd temp_repo || exit
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
     echo "The change report for this PR already exists. The workflow will continue and just skip the process for this one."
+    cd ..
     continue
   fi
   cd ..
