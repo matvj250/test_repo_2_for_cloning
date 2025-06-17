@@ -109,9 +109,9 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  filenames+=("pr-$latest_pr.txt")
-  filenames+=("pr-$latest_pr.json")
-  echo "current file name list:" "{filenames[@]}"
+  filenames+=("data/japicmp/" "pr-$latest_pr.txt")
+  filenames+=("data/output/" "pr-$latest_pr.json")
+  echo "current file name list:" "{$filenames[@]}"
 
   mv pr-"$latest_pr".txt temp_repo/data/japicmp
   mv pr-"$latest_pr".json temp_repo/data/output
@@ -122,15 +122,18 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   mv commit_jars_old/*  commit_jars_new
 done
 
+echo "done with file generation"
 # check here to avoid code running when everything created overlaps with preexisting files
 # this should never be necessary, but it's good to be safe
 if [[ ${#filenames[@]} -ne 0 ]]; then
   git config --global user.name "github-actions[bot]"
   git config --global user.email "github-actions[bot]@users.noreply.github.com"
   cd temp_repo || exit
-  git add "${filenames[@]}"
+  for name in "${filenames[@]}"; do
+    git add "$name"
+  done
   git commit -m "Adding files for ${prnames[*]}"
-  git push origin main
+  git push origin main --repo=https://github.com/matvj250/test_repo_2_for_cloning.git
   cd ..
 fi
 
