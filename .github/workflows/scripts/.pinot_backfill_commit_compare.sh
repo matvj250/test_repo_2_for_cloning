@@ -2,7 +2,7 @@
 
 # get commits between the two times provided. if there are no commits, exit the script
 # note: I could do below with git log --before --after as well after cloning pinot
-commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\") | select(.commit.committer.date >= \"$2\")" | wc -l)
+commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\") | select(.commit.committer.date <= \"$2\")")
 IFS=' ' read -r -a hashlist <<< "$commits"
 commitcount="${#hashlist[@]}"
 if [[ commitcount -eq 0 ]]; then
