@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       startDate:
-        description: "Start date in UTC for commit range. (required)"
+        description: "Start date for commit range. (UTC; ISO 8601; required)"
         required: true
       endDate:
-        description: "End date in UTC for commit range. (required)"
+        description: "End date for commit range. (UTC; ISO 8601; required)"
         required: true
 
 jobs:
