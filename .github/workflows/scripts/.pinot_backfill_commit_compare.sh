@@ -55,7 +55,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     cd pinot || exit
     git checkout "${hashlist[i-1]}"
     mvn clean install -DskipTests -q
-    echo "mvn clean # ""${i-1}"" done"
+    echo "mvn clean # ""$((i-1))"" done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
     IFS=' ' read -r -a namelist <<< "$paths"
     cd ..
@@ -131,7 +131,7 @@ if [[ ${#prnames[@]} -ne 0 ]]; then
   git commit -m "Adding files for PRs ${prnames[*]}"
   git remote rm origin
   git remote add origin 'git@github.com:matvj250/test_repo_2_for_cloning.git'
-  git push origin main
+  git push origin main || { echo "push failed"; exit 1; }
   cd ..
 fi
 
