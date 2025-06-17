@@ -111,7 +111,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   prnames+=("$latest_pr")
   filenames+=("data/japicmp/" "pr-$latest_pr.txt")
   filenames+=("data/output/" "pr-$latest_pr.json")
-  echo "current file name list:" "{$filenames[@]}"
+  echo "current file name list:" "${filenames[@]}"
 
   mv pr-"$latest_pr".txt temp_repo/data/japicmp
   mv pr-"$latest_pr".json temp_repo/data/output
@@ -129,11 +129,9 @@ if [[ ${#filenames[@]} -ne 0 ]]; then
   git config --global user.name "github-actions[bot]"
   git config --global user.email "github-actions[bot]@users.noreply.github.com"
   cd temp_repo || exit
-  for name in "${filenames[@]}"; do
-    git add "$name"
-  done
+  git add .
   git commit -m "Adding files for ${prnames[*]}"
-  git push origin main --repo=https://github.com/matvj250/test_repo_2_for_cloning.git
+  git push origin main --repo=git@github.com:matvj250/test_repo_2_for_cloning.git
   cd ..
 fi
 
