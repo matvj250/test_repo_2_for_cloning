@@ -1,4 +1,4 @@
-name: Regular Commit Comparison Generator
+name: Backfill Commit Comparison Generator
 
 on:
   workflow_dispatch:
