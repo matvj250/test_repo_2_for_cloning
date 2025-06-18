@@ -42,9 +42,9 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   fi
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
-  if [[ i -eq 1 ]]; then
+  if [[ $i -eq 1 ]]; then
     cd pinot || exit
-    git checkout "${hashlist[((i-1))]}"
+    git checkout "${hashlist[$((i-1))]}"
     mvn clean install -DskipTests -q
     echo "mvn clean #""$((i-1))"" done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
