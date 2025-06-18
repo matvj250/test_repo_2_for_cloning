@@ -28,6 +28,10 @@ jobs:
 #        run: npm ci
 #      - name: Generate manifest.json
 #        run: npm run build
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Run report+json generator process
         run: |
           .github/workflows/scripts/.pinot_backfill_commit_compare.sh ${{ github.event.inputs.startDate }} ${{ github.event.inputs.endDate }}
