@@ -34,7 +34,7 @@ fi
 arrlen=${#hashlist[@]}
 prnames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
-  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
+  latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[$((i-1))]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
     echo "The change report for this PR already exists. The workflow will continue and just skip the process for this one."
@@ -44,7 +44,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
     cd pinot || exit
-    git checkout "${hashlist[i-1]}"
+    git checkout "${hashlist[((i-1))]}"
     mvn clean install -DskipTests -q
     echo "mvn clean #""$((i-1))"" done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
@@ -55,7 +55,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     done
   fi
   cd pinot || exit
-  git checkout "${hashlist[i]}"
+  git checkout "${hashlist[$i]}"
   mvn clean install -DskipTests -q
   echo "mvn clean #""$i"" done"
   paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
