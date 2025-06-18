@@ -114,7 +114,6 @@ done
 echo "done with file generation"
 # "unclone" repos
 rm -rf pinot
-rm -rf temp_repo
 
 # remove temp directories
 rm -rf commit_jars_old
