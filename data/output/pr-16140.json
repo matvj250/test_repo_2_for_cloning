@@ -1,0 +1,11 @@
+{
+  "files": [
+    "pinot-controller/src/main/java/org/apache/pinot/controller/helix/core/rebalance/TableRebalancer.java",
+    "pinot-tools/src/main/java/org/apache/pinot/tools/RealtimeQuickStart.java"
+  ],
+  "mergedAt": "2025-06-18T15:15:18Z",
+  "number": 16140,
+  "title": "Avoid writing incorrect rebalance progress stats for table rebalances with instance reassignment but no segment rebalance",
+  "url": "https://github.com/apache/pinot/pull/16140",
+  "jcmpClasses": []
+}
