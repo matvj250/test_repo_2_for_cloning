@@ -1,0 +1,15 @@
+{
+  "files": [
+    "pinot-controller/src/main/java/org/apache/pinot/controller/helix/core/PinotHelixResourceManager.java",
+    "pinot-core/src/main/java/org/apache/pinot/core/data/manager/BaseTableDataManager.java",
+    "pinot-core/src/main/java/org/apache/pinot/core/operator/filter/MapFilterOperator.java",
+    "pinot-core/src/main/java/org/apache/pinot/core/startree/StarTreeUtils.java",
+    "pinot-integration-tests/src/test/java/org/apache/pinot/integration/tests/OfflineClusterIntegrationTest.java",
+    "pinot-segment-local/src/main/java/org/apache/pinot/segment/local/segment/readers/PinotSegmentColumnReader.java"
+  ],
+  "mergedAt": "2025-06-17T20:16:56Z",
+  "number": 16121,
+  "title": "Misc fixes for virtual column support",
+  "url": "https://github.com/apache/pinot/pull/16121",
+  "jcmpClasses": []
+}
