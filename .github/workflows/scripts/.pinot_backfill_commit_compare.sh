@@ -6,7 +6,7 @@ commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer
 IFS=' ' read -r -a hashlist <<< "$commits"
 commitcount="${#hashlist[@]}"
 if [[ commitcount -eq 0 ]]; then
-  echo "There have been no commits in the past 30 minutes."
+  echo "There were no commits made in the provided time range."
   exit 0
 fi
 
@@ -14,7 +14,7 @@ fi
 git clone --branch master https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
-baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
+baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$((commitcount-1))]}"^)
 hashlist+=("$baseline")
 cd ..
 echo "commits being processed:" "${hashlist[*]}"
@@ -115,21 +115,9 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
 done
 
 echo "done with file generation"
-# check here to avoid code running when everything created overlaps with preexisting files
-# this should never be necessary, but it's good to be safe
-# if [[ ${#prnames[@]} -ne 0 ]]; then
-#   cd temp_repo || exit
-#   git add .
-#   git commit -m "Adding files for PRs ${prnames[*]}"
-#   git remote rm origin
-#   git remote add origin 'git@github.com:matvj250/test_repo_2_for_cloning.git'
-#   git push origin main || { echo "push failed"; exit 1; }
-#   cd ..
-# fi
 
 # "unclone" repos
 rm -rf pinot
-rm -rf temp_repo
 
 # remove temp directories
 rm -rf commit_jars_old
