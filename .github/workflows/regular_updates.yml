@@ -2,7 +2,7 @@ name: Regular Commit Comparison Generator
 
 on:
   schedule:
-    - cron: "23 0 */1 * *" # every hour at 23rd minute
+    - cron: "23 */1 * * *" # every hour at 23rd minute
 
 jobs:
   commit-compare:
@@ -18,12 +18,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-#      - name: Install dependencies
-#        run: npm ci
-#      - name: Generate manifest.json
-#        run: npm run build
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Run report+json generator process
         run: |
-          .github/workflows/scripts/.pinot_realtime_commit_compare.sh "$current_datetime_minus_1h"
+          .github/workflows/scripts/.pinot_backfill_commit_compare.sh ${{ github.event.inputs.startDate }} ${{ github.event.inputs.endDate }}
         env:
-          GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "Add PR reports"
+            git push
+          else
+            echo "No commits made in the last hour."
+          fi
