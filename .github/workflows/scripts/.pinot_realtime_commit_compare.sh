@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# get count of commits from last 30 minutes. if there are no commits, exit the script
+# get count of commits from last hour. if there are no commits, exit the script
 echo "$1"
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
 if [[ commitcount -eq 0 ]]; then
-  echo "There have been no commits in the past 30 minutes."
+  echo "There have been no commits in the last hour."
   exit 0
 fi
 
@@ -15,9 +15,7 @@ version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr 
 log="$(git log --pretty=format:"%H" | tr "\n" " ")"
 IFS=' ' read -r -a hashlist <<< "$log"
 cd ..
-
-# get current repo and other steps
-git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
+echo "commits being processed:" "${hashlist[*]}"
 
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
@@ -35,24 +33,20 @@ fi
 
 arrlen=${#hashlist[@]}
 prnames=()
-filenames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
-  cd temp_repo || exit
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
     echo "The change report for this PR already exists. The workflow will continue and just skip the process for this one."
-    cd ..
     continue
   fi
-  cd ..
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
     cd pinot || exit
     git checkout "${hashlist[i-1]}"
-    mvn clean install -DskipTests -q
-    echo "$i mvn clean done"
+    mvn clean install -DskipTests -q -pl pinot-spi
+    echo "mvn clean #""$((i-1))"" done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
     IFS=' ' read -r -a namelist <<< "$paths"
     cd ..
@@ -62,8 +56,8 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   fi
   cd pinot || exit
   git checkout "${hashlist[i]}"
-  mvn clean install -DskipTests -q
-  echo "${i+1} mvn clean done"
+  mvn clean install -DskipTests -q -pl pinot-spi
+  echo "mvn clean #""$i"" done"
   paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
   IFS=' ' read -r -a namelist2 <<< "$paths2"
   cd ..
@@ -108,32 +102,16 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  filenames+=("data/japicmp/" "pr-$latest_pr.txt")
-  filenames+=("data/output/" "pr-$latest_pr.json")
-  echo "current file name list:" "${filenames[@]}"
-
-  mv pr-"$latest_pr".txt temp_repo/data/japicmp
-  mv pr-"$latest_pr".json temp_repo/data/output
+  mv pr-"$latest_pr".txt data/japicmp
+  mv pr-"$latest_pr".json data/output
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
-  rm -r commit_jars_new/*
-  mv commit_jars_old/*  commit_jars_new
+  rm -rf commit_jars_new/*
+  mv commit_jars_old/* commit_jars_new
 done
 
 echo "done with file generation"
-# check here to avoid code running when everything created overlaps with preexisting files
-# this should never be necessary, but it's good to be safe
-if [[ ${#filenames[@]} -ne 0 ]]; then
-  git config --global user.name "github-actions[bot]"
-  git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  cd temp_repo || exit
-  git add .
-  git commit -m "Adding files for ${prnames[*]}"
-  git push origin main --repo=git@github.com:matvj250/test_repo_2_for_cloning.git
-  cd ..
-fi
-
 # "unclone" repos
 rm -rf pinot
 rm -rf temp_repo
