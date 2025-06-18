@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       startDate:
-        description: "Start date for commit range. (UTC; ISO 8601; required)"
+        description: "Start datetime for commit range. (UTC; ISO 8601; required)"
         required: true
       endDate:
-        description: "End date for commit range. (UTC; ISO 8601; required)"
+        description: "End datetime for commit range. (UTC; ISO 8601; required)"
         required: true
 
 jobs:
@@ -15,19 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Commit Comparer
     steps:
-#      - name: Get current date
-#        id: datetime
-#        run: echo "current_datetime_minus_1h=$(date -u --date="1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
       - name: Check out code
         uses: actions/checkout@v3
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-#      - name: Install dependencies
-#        run: npm ci
-#      - name: Generate manifest.json
-#        run: npm run build
       - name: Configure Git user
         run: |
           git config --global user.name "github-actions[bot]"
@@ -41,8 +34,8 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git add .
-            git commit -m "Add PR reports"
+            git commit -m "Add commit reports"
             git push
           else
-            echo "No commits made in last 30 minutes."
+            echo "Reports already exist for all commits in provided range."
           fi
