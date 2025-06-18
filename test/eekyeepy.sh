@@ -4,8 +4,34 @@
 #  echo "$i"
 #done
 
-temp=$((1+2))
-echo "it's time to""$temp"
+commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
+echo "$commitcount"
+
+# need # of commits + 1 to get the "old commit" for the earliest new commit
+#git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
+cd pinot || exit
+log="$(git log --pretty=format:"%H" -3| tr "\n" " ")"
+IFS=' ' read -r -a hashlist <<< "$log"
+cd ..
+
+arrlen=${#hashlist[@]}
+for i in $( seq 1 "$((arrlen - 1))" ); do
+  gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number'
+done
+
+
+#commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\") | select(.commit.committer.date <= \"$2\") | .sha" | tr "\n" " ")
+#IFS=' ' read -r -a hashlist <<< "$commits"
+#echo "${hashlist[@]}"
+#commitcount="${#hashlist[@]}"
+## check out entire repo
+##git clone --branch master --depth 10 https://github.com/apache/pinot.git
+#cd pinot || exit
+#baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$((commitcount-1))]}"^)
+##echo "$baseline"
+#hashlist+=("$baseline")
+#cd ..
+#echo "commits being processed:" "${hashlist[*]}"
 
 #commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"2025-06-16T23:00:00Z\") | select(.commit.committer.date <= \"2025-06-17T00:00:00Z\") | .sha")
 #IFS=' ' read -r -a hashlist <<< "$commits"
