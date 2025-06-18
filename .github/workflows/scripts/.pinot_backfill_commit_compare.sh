@@ -20,9 +20,7 @@ cd ..
 echo "commits being processed:" "${hashlist[*]}"
 
 # get current repo and other steps
-git config --global user.name "github-actions[bot]"
-git config --global user.email "github-actions[bot]@users.noreply.github.com"
-git clone --branch main --depth 1 https://"${GH_TOKEN}"@github.com/matvj250/test_repo_2_for_cloning.git temp_repo
+git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
 
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
