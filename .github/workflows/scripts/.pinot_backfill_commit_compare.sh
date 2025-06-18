@@ -55,7 +55,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     cd pinot || exit
     git checkout "${hashlist[i-1]}"
     mvn clean install -DskipTests -q -pl pinot-spi
-    echo "mvn clean # ""$((i-1))"" done"
+    echo "mvn clean #""$((i-1))"" done"
     paths="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")" # get all module jars made by mvn clean install
     IFS=' ' read -r -a namelist <<< "$paths"
     cd ..
@@ -66,7 +66,7 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
   cd pinot || exit
   git checkout "${hashlist[i]}"
   mvn clean install -DskipTests -q -pl pinot-spi
-  echo "mvn clean # ""$i"" done"
+  echo "mvn clean #""$i"" done"
   paths2="$(find . -type f -name "*${version}.jar" -print | tr "\n" " ")"
   IFS=' ' read -r -a namelist2 <<< "$paths2"
   cd ..
@@ -111,12 +111,12 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  mv pr-"$latest_pr".txt temp_repo/data/japicmp
-  mv pr-"$latest_pr".json temp_repo/data/output
+  mv pr-"$latest_pr".txt data/japicmp
+  mv pr-"$latest_pr".json data/output
 
   # move commit_jars_old to commit_jars_new
   # since the "old" PR is now being analyzed for changes
-  rm -r commit_jars_new/*
+  rm -rf commit_jars_new/*
   mv commit_jars_old/* commit_jars_new
 done
 
@@ -133,10 +133,10 @@ echo "done with file generation"
 #   cd ..
 # fi
 
-# # "unclone" repos
-# rm -rf pinot
-# rm -rf temp_repo
+# "unclone" repos
+rm -rf pinot
+rm -rf temp_repo
 
-# # remove temp directories
-# rm -rf commit_jars_old
-# rm -rf commit_jars_new
+# remove temp directories
+rm -rf commit_jars_old
+rm -rf commit_jars_new
