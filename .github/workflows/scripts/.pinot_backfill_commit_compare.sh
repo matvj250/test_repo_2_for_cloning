@@ -19,9 +19,6 @@ hashlist+=("$baseline")
 cd ..
 echo "commits being processed:" "${hashlist[*]}"
 
-# get current repo and other steps
-git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
-
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
 mkdir commit_jars_new
@@ -42,13 +39,10 @@ prnames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
-  cd temp_repo || exit
   if [[ -e data/japicmp/pr-"$latest_pr".txt ]]; then
     echo "The change report for this PR already exists. The workflow will continue and just skip the process for this one."
-    cd ..
     continue
   fi
-  cd ..
   # we're only running mvn clean install twice for a PR at the beginning
   # since afterwards, we'll always have one of the two sets of jars downloaded already
   if [[ i -eq 1 ]]; then
