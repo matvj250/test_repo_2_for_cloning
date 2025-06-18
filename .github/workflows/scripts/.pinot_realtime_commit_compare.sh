@@ -17,7 +17,7 @@ IFS=' ' read -r -a hashlist <<< "$log"
 cd ..
 echo "commits being processed:" "${hashlist[*]}"
 
-# make temp directories, download japicmp, and set boolean
+# make temp directories, download japicmp
 mkdir commit_jars_old
 mkdir commit_jars_new
 if [ ! -e japicmp.jar ]; then
@@ -31,8 +31,8 @@ if [ ! -e japicmp.jar ]; then
   fi
 fi
 
+# get japicmp output for all commits
 arrlen=${#hashlist[@]}
-prnames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[$((i-1))]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
@@ -101,7 +101,6 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --metadata "$metadata" \
     --output pr-"$latest_pr".json
 
-  prnames+=("$latest_pr")
   mv pr-"$latest_pr".txt data/japicmp
   mv pr-"$latest_pr".json data/output
 
