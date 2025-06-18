@@ -30,6 +30,7 @@ jobs:
       - name: Commit and push changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
+            git pull
             git add .
             git commit -m "Add commit reports"
             git push
