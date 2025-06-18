@@ -2,7 +2,6 @@
 
 # get commits between the two times provided. if there are no commits, exit the script
 # note: I could do below with git log --before --after as well after cloning pinot
-echo $GH_TOKEN
 commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\") | select(.commit.committer.date <= \"$2\") | .sha")
 IFS=' ' read -r -a hashlist <<< "$commits"
 commitcount="${#hashlist[@]}"
@@ -23,7 +22,7 @@ echo "commits being processed:" "${hashlist[*]}"
 # get current repo and other steps
 git config --global user.name "github-actions[bot]"
 git config --global user.email "github-actions[bot]@users.noreply.github.com"
-git clone --branch main --depth 1 https://x-access-token:"${GH_TOKEN}"@github.com/matvj250/test_repo_2_for_cloning.git temp_repo
+git clone --branch main --depth 1 https://github-actions[bot]:"${GH_TOKEN}"@github.com/matvj250/test_repo_2_for_cloning.git temp_repo
 
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
