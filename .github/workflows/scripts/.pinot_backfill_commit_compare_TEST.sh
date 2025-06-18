@@ -11,16 +11,18 @@ if [[ commitcount -eq 0 ]]; then
 fi
 
 # check out entire repo
-#git clone --branch master https://github.com/apache/pinot.git
+git clone --branch master https://github.com/apache/pinot.git
 cd pinot || exit
 version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d "%")" # there's a % at the end for some reason
 baseline=$(git log --pretty=format:"%H" -1 "${hashlist[$commitcount-1]}"^)
 hashlist+=("$baseline")
 cd ..
-echo "${hashlist[*]}"
+echo "commits being processed:" "${hashlist[*]}"
 
 # get current repo and other steps
-#git clone --branch main --depth 1 https://github.com/matvj250/test_repo_2_for_cloning.git temp_repo
+git config --global user.name "github-actions[bot]"
+git config --global user.email "github-actions[bot]@users.noreply.github.com"
+git clone --branch main --depth 1 https://x-access-token:"${GH_TOKEN}"@github.com/matvj250/test_repo_2_for_cloning.git temp_repo
 
 # make temp directories, download japicmp, and set boolean
 mkdir commit_jars_old
@@ -36,10 +38,8 @@ if [ ! -e japicmp.jar ]; then
   fi
 fi
 
-# length - 1 because the final entry of the array is just a space
 arrlen=${#hashlist[@]}
 prnames=()
-filenames=()
 for i in $( seq 1 "$((arrlen - 1))" ); do
   latest_pr="$(gh api repos/apache/pinot/commits/"${hashlist[i-1]}"/pulls \
           -H "Accept: application/vnd.github.groot-preview+json" | jq '.[0].number')" # corresponding PR number
@@ -112,25 +112,20 @@ for i in $( seq 1 "$((arrlen - 1))" ); do
     --output pr-"$latest_pr".json
 
   prnames+=("$latest_pr")
-  filenames+=("data/japicmp/""pr-$latest_pr.txt")
-  filenames+=("data/output/""pr-$latest_pr.json")
-  echo "current file name list:" "${filenames[@]}"
+  echo "current pr list:" "${prnames[@]}"
 
   mv pr-"$latest_pr".txt temp_repo/data/japicmp
   mv pr-"$latest_pr".json temp_repo/data/output
 
-  # move commit_jars_old to commit_jars_new
-  # since the "old" PR is now being analyzed for changes
-  rm -r commit_jars_new/*
-  mv commit_jars_old/*  commit_jars_new
+  # only one pr is being tested for this test so this code is unnecessary
+#  rm -r commit_jars_new/*
+#  mv commit_jars_old/* commit_jars_new
 done
 
 echo "done with file generation"
 # check here to avoid code running when everything created overlaps with preexisting files
 # this should never be necessary, but it's good to be safe
-if [[ ${#filenames[@]} -ne 0 ]]; then
-  git config --global user.name "github-actions[bot]"
-  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+if [[ ${#prnames[@]} -ne 0 ]]; then
   cd temp_repo || exit
   git add .
   git commit -m "Adding files for PRs ${prnames[*]}"
