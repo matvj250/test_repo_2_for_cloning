@@ -1,8 +1,11 @@
 name: date test
 
 on:
-  schedule:
-    - cron: "0 0 1 1 0"
+  workflow_dispatch:
+    inputs:
+      ijioj:
+        description: "eofijne2gio23heigo24"
+        required: false
 
 jobs:
   commit-compare:
@@ -11,14 +14,15 @@ jobs:
     steps:
       - name: Get current date
         id: datetime
-#        run: date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ"
-        run: echo "current_datetime_minus_30m=$(date -u --date="2 hours ago" +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+        run: echo "last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow commit_report_realtime.yml --status success --limit 1 --json startedAt --jq '.[] | .startedAt')" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}
       - name: Check out code
         uses: actions/checkout@v3
       - name: test
-        run: echo "$current_datetime_minus_30m"
-      - name: george clooney
-        run: |
-          test/eekyeepy.sh "$current_datetime_minus_30m"
-        env:
-          GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}
+        run: echo "$last_workflow_run"
+      # - name: george clooney
+      #   run: |
+      #     test/eekyeepy.sh "$current_datetime_minus_30m"
+      #   env:
+      #     GH_TOKEN: ${{ secrets.COMMIT_CHANGE_REPORT }}
