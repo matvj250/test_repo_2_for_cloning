@@ -32,4 +32,4 @@ jobs:
         run: |
           .github/workflows/scripts/.pinot_backfill_commit_compare.sh ${{ github.event.inputs.startDate }} ${{ github.event.inputs.endDate }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.COMMIT_REPORT_REALTIME }}
