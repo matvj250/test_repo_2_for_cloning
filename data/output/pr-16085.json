@@ -1,0 +1,14 @@
+{
+  "files": [
+    "pinot-controller/src/main/resources/app/components/SimpleAccordion.tsx",
+    "pinot-controller/src/main/resources/app/components/StatusFilter.tsx",
+    "pinot-controller/src/main/resources/app/components/Table.tsx",
+    "pinot-controller/src/main/resources/app/components/TableToolbar.tsx",
+    "pinot-controller/src/main/resources/app/pages/TenantDetails.tsx"
+  ],
+  "mergedAt": "2025-06-18T05:54:45Z",
+  "number": 16085,
+  "title": "Add Filter for segment state in the Table UI",
+  "url": "https://github.com/apache/pinot/pull/16085",
+  "jcmpClasses": []
+}
