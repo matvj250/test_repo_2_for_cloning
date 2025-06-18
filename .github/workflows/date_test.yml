@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Get current date
         id: datetime
-        run: echo "last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status success --limit 1 --json startedAt --jq '.[] | .startedAt')" >> $GITHUB_ENV
+        run: echo "last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --limit 1 --json startedAt --jq '.[] | .startedAt')" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check out code
