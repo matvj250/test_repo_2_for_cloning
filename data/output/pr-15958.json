@@ -1,0 +1,128 @@
+{
+  "files": [
+    "pinot-query-planner/src/main/java/org/apache/pinot/calcite/rel/rules/PinotRuleUtils.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/calcite/rel/rules/PinotWindowExchangeNodeInsertRule.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/calcite/rel/traits/TraitAssignment.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/query/planner/physical/v2/PRelToPlanNodeConverter.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/query/planner/physical/v2/RelToPRelConverter.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/query/planner/physical/v2/nodes/PhysicalAsOfJoin.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/query/planner/physical/v2/opt/rules/AggregatePushdownRule.java",
+    "pinot-query-planner/src/main/java/org/apache/pinot/query/planner/physical/v2/opt/rules/WorkerExchangeAssignmentRule.java",
+    "pinot-query-planner/src/test/resources/queries/PhysicalOptimizerPlans.json",
+    "pinot-query-runtime/src/test/java/org/apache/pinot/query/runtime/queries/ResourceBasedQueriesTest.java"
+  ],
+  "mergedAt": "2025-06-16T23:46:25Z",
+  "number": 15958,
+  "title": "[multistage] Enable Tests for New Optimizer + Bug Fixes",
+  "url": "https://github.com/apache/pinot/pull/15958",
+  "jcmpClasses": [
+    {
+      "className": "org.apache.pinot.calcite.rel.rules.PinotRuleUtils$WindowUtils",
+      "type": "addition",
+      "compatible": true,
+      "removedMethods": [],
+      "addedMethods": [
+        "PRIVATE(+) STATIC(+) org.apache.calcite.rex.RexLiteral getLiteral(org.apache.calcite.rex.RexNode, int, com.google.common.collect.ImmutableList<org.apache.calcite.rex.RexLiteral>, java.util.List<org.apache.calcite.rex.RexNode>)",
+        "PUBLIC(+) STATIC(+) org.apache.calcite.rel.core.Window$Group updateLiteralArgumentsInWindowGroup(org.apache.calcite.rel.core.Window)",
+        "PRIVATE(+) STATIC(+) void validateWindowAggCallsSupported(org.apache.calcite.rel.core.Window$Group)",
+        "PRIVATE(+) STATIC(+) void validateWindowFrames(org.apache.calcite.rel.core.Window$Group)",
+        "PUBLIC(+) STATIC(+) void validateWindows(org.apache.calcite.rel.core.Window)"
+      ],
+      "removedFields": [],
+      "addedFields": [
+        "PRIVATE(+) STATIC(+) FINAL(+) java.util.EnumSet<org.apache.calcite.sql.SqlKind> SUPPORTED_WINDOW_FUNCTION_KIND"
+      ],
+      "removedConstructors": [],
+      "addedConstructors": [
+        "PUBLIC(+) PinotRuleUtils$WindowUtils()"
+      ]
+    },
+    {
+      "className": "org.apache.pinot.calcite.rel.rules.PinotWindowExchangeNodeInsertRule",
+      "type": "modification",
+      "compatible": false,
+      "removedMethods": [
+        "PRIVATE(-) org.apache.calcite.rex.RexLiteral getLiteral(org.apache.calcite.rex.RexNode, int, com.google.common.collect.ImmutableList<org.apache.calcite.rex.RexLiteral>, java.util.List<org.apache.calcite.rex.RexNode>)",
+        "PRIVATE(-) org.apache.calcite.rel.core.Window$Group updateLiteralArgumentsInWindowGroup(org.apache.calcite.rel.core.Window)",
+        "PRIVATE(-) void validateWindowAggCallsSupported(org.apache.calcite.rel.core.Window$Group)",
+        "PRIVATE(-) void validateWindowFrames(org.apache.calcite.rel.core.Window$Group)",
+        "PRIVATE(-) void validateWindows(org.apache.calcite.rel.core.Window)"
+      ],
+      "addedMethods": [],
+      "removedFields": [],
+      "addedFields": [],
+      "removedConstructors": [],
+      "addedConstructors": []
+    },
+    {
+      "className": "org.apache.pinot.calcite.rel.traits.TraitAssignment",
+      "type": "modification",
+      "compatible": false,
+      "removedMethods": [
+        "org.apache.calcite.rel.RelNode assignJoin(org.apache.pinot.query.planner.physical.v2.nodes.PhysicalJoin)",
+        "PRIVATE(-) org.apache.calcite.rel.RelNode assignLookupJoin(org.apache.pinot.query.planner.physical.v2.nodes.PhysicalJoin)"
+      ],
+      "addedMethods": [
+        "org.apache.calcite.rel.RelNode assignJoin(org.apache.calcite.rel.core.Join)",
+        "PRIVATE(+) org.apache.calcite.rel.RelNode assignLookupJoin(org.apache.calcite.rel.core.Join)"
+      ],
+      "removedFields": [],
+      "addedFields": [],
+      "removedConstructors": [],
+      "addedConstructors": []
+    },
+    {
+      "className": "org.apache.pinot.query.planner.physical.v2.nodes.PhysicalAsOfJoin",
+      "type": "addition",
+      "compatible": true,
+      "removedMethods": [],
+      "addedMethods": [
+        "PUBLIC(+) org.apache.calcite.rel.core.Join copy(org.apache.calcite.plan.RelTraitSet, org.apache.calcite.rex.RexNode, org.apache.calcite.rel.RelNode, org.apache.calcite.rel.RelNode, org.apache.calcite.rel.core.JoinRelType, boolean)",
+        "PUBLIC(+) int getNodeId()",
+        "PUBLIC(+) org.apache.pinot.query.planner.physical.v2.PinotDataDistribution getPinotDataDistribution()",
+        "PUBLIC(+) java.util.List<org.apache.pinot.query.planner.physical.v2.PRelNode> getPRelInputs()",
+        "PUBLIC(+) boolean isLeafStage()",
+        "PUBLIC(+) org.apache.calcite.rel.RelNode unwrap()",
+        "PUBLIC(+) org.apache.pinot.query.planner.physical.v2.PRelNode with(int, java.util.List<org.apache.pinot.query.planner.physical.v2.PRelNode>, org.apache.pinot.query.planner.physical.v2.PinotDataDistribution)"
+      ],
+      "removedFields": [],
+      "addedFields": [
+        "PRIVATE(+) FINAL(+) java.util.List<org.apache.pinot.query.planner.physical.v2.PRelNode> _pRelInputs",
+        "PRIVATE(+) FINAL(+) int _nodeId",
+        "PRIVATE(+) FINAL(+) org.apache.pinot.query.planner.physical.v2.PinotDataDistribution _pinotDataDistribution"
+      ],
+      "removedConstructors": [],
+      "addedConstructors": [
+        "PUBLIC(+) PhysicalAsOfJoin(org.apache.calcite.plan.RelOptCluster, org.apache.calcite.plan.RelTraitSet, java.util.List<org.apache.calcite.rel.hint.RelHint>, org.apache.calcite.rex.RexNode, org.apache.calcite.rex.RexNode, java.util.Set<org.apache.calcite.rel.core.CorrelationId>, org.apache.calcite.rel.core.JoinRelType, int, org.apache.pinot.query.planner.physical.v2.PRelNode, org.apache.pinot.query.planner.physical.v2.PRelNode, org.apache.pinot.query.planner.physical.v2.PinotDataDistribution)"
+      ]
+    },
+    {
+      "className": "org.apache.pinot.query.planner.physical.v2.opt.rules.WorkerExchangeAssignmentRule",
+      "type": "modification",
+      "compatible": false,
+      "removedMethods": [
+        "PRIVATE(-) java.util.Optional<org.apache.pinot.query.planner.physical.v2.HashDistributionDesc> getLeftInputHashDistributionDesc(org.apache.pinot.query.planner.physical.v2.nodes.PhysicalJoin)"
+      ],
+      "addedMethods": [
+        "PRIVATE(+) java.util.Optional<org.apache.pinot.query.planner.physical.v2.HashDistributionDesc> getLeftInputHashDistributionDesc(org.apache.calcite.rel.core.Join)"
+      ],
+      "removedFields": [],
+      "addedFields": [],
+      "removedConstructors": [],
+      "addedConstructors": []
+    },
+    {
+      "className": "org.apache.pinot.query.planner.physical.v2.PRelToPlanNodeConverter",
+      "type": "modification",
+      "compatible": true,
+      "removedMethods": [],
+      "addedMethods": [
+        "PUBLIC(+) STATIC(+) org.apache.pinot.query.planner.plannode.JoinNode convertAsOfJoin(org.apache.pinot.query.planner.physical.v2.nodes.PhysicalAsOfJoin)"
+      ],
+      "removedFields": [],
+      "addedFields": [],
+      "removedConstructors": [],
+      "addedConstructors": []
+    }
+  ]
+}
