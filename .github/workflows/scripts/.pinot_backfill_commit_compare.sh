@@ -125,20 +125,20 @@ done
 echo "done with file generation"
 # check here to avoid code running when everything created overlaps with preexisting files
 # this should never be necessary, but it's good to be safe
-if [[ ${#prnames[@]} -ne 0 ]]; then
-  cd temp_repo || exit
-  git add .
-  git commit -m "Adding files for PRs ${prnames[*]}"
-  git remote rm origin
-  git remote add origin 'git@github.com:matvj250/test_repo_2_for_cloning.git'
-  git push origin main || { echo "push failed"; exit 1; }
-  cd ..
-fi
+# if [[ ${#prnames[@]} -ne 0 ]]; then
+#   cd temp_repo || exit
+#   git add .
+#   git commit -m "Adding files for PRs ${prnames[*]}"
+#   git remote rm origin
+#   git remote add origin 'git@github.com:matvj250/test_repo_2_for_cloning.git'
+#   git push origin main || { echo "push failed"; exit 1; }
+#   cd ..
+# fi
 
-# "unclone" repos
-rm -rf pinot
-rm -rf temp_repo
+# # "unclone" repos
+# rm -rf pinot
+# rm -rf temp_repo
 
-# remove temp directories
-rm -rf commit_jars_old
-rm -rf commit_jars_new
+# # remove temp directories
+# rm -rf commit_jars_old
+# rm -rf commit_jars_new
