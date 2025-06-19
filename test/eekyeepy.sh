@@ -3,6 +3,9 @@
 last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status success --limit 1 --json startedAt --jq '.[] | .startedAt')
 current_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status in_progress --limit 1 --json startedAt --jq '.[] | .startedAt')
 
+echo $last_workflow_run
+echo $current_workflow_run
+
 commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$last_workflow_run\") | select(.commit.committer.date <= \"$current_workflow_run\")" | wc -l)
 echo "$commitcount"
 
