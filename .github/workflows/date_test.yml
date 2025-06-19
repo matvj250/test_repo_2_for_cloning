@@ -12,12 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     name: blech
     steps:
-      - name: Get current date
-        id: datetime
-        run: echo "last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --limit 1 --json startedAt --jq '.[] | .startedAt')" >> $GITHUB_ENV
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check out code
         uses: actions/checkout@v3
-      - name: test
-        run: echo "$last_workflow_run"
+      - name: Run report+json generator process
+        run: |
+          test/eekyeepy.sh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

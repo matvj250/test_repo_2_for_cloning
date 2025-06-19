@@ -1,36 +1,35 @@
 #!/bin/bash
 
-#for i in $( seq 1 1 ); do
-#  echo "$i"
-#done
+last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status success --limit 1 --json startedAt --jq '.[] | .startedAt')
+current_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status in_progress --limit 1 --json startedAt --jq '.[] | .startedAt')
 
-commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\")" | wc -l)
+commitcount=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$last_workflow_run\") | select(.commit.committer.date <= \"$current_workflow_run\")" | wc -l)
 echo "$commitcount"
 
 # need # of commits + 1 to get the "old commit" for the earliest new commit
-git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
-cd pinot || exit
-log="$(git log --pretty=format:"%H" | tr "\n" " ")"
-IFS=' ' read -r -a hashlist <<< "$log"
-cd ..
-
-arrlen=${#hashlist[@]}
-for i in $( seq 1 "$((arrlen - 1))" ); do
-  if [[ i -eq 1 ]]; then
-      cd pinot || exit
-      echo "${hashlist[$((i-1))]}"
-      git checkout "${hashlist[$((i-1))]}"
-      mvn clean install -DskipTests -q -pl pinot-spi
-      echo "mvn clean #""$((i-1))"" done"
-      cd ..
-  fi
-  cd pinot || exit
-  echo "${hashlist[$i]}"
-  git checkout "${hashlist[$i]}"
-  mvn clean install -DskipTests -q -pl pinot-spi
-  echo "mvn clean #""$i"" done"
-  cd ..
-done
+#git clone --branch master --depth $((commitcount+1)) https://github.com/apache/pinot.git
+#cd pinot || exit
+#log="$(git log --pretty=format:"%H" | tr "\n" " ")"
+#IFS=' ' read -r -a hashlist <<< "$log"
+#cd ..
+#
+#arrlen=${#hashlist[@]}
+#for i in $( seq 1 "$((arrlen - 1))" ); do
+#  if [[ i -eq 1 ]]; then
+#      cd pinot || exit
+#      echo "${hashlist[$((i-1))]}"
+#      git checkout "${hashlist[$((i-1))]}"
+#      mvn clean install -DskipTests -q -pl pinot-spi
+#      echo "mvn clean #""$((i-1))"" done"
+#      cd ..
+#  fi
+#  cd pinot || exit
+#  echo "${hashlist[$i]}"
+#  git checkout "${hashlist[$i]}"
+#  mvn clean install -DskipTests -q -pl pinot-spi
+#  echo "mvn clean #""$i"" done"
+#  cd ..
+#done
 
 
 #commits=$(gh api repos/apache/pinot/commits --jq ".[] | select(.commit.committer.date >= \"$1\") | select(.commit.committer.date <= \"$2\") | .sha" | tr "\n" " ")
