@@ -1,7 +1,7 @@
 #!/bin/bash
 
 last_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status success --limit 1 --json startedAt --jq '.[] | .startedAt')
-current_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --status in_progress --limit 1 --json startedAt --jq '.[] | .startedAt')
+current_workflow_run=$(gh run list -R matvj250/test_repo_2_for_cloning --workflow date_test.yml --limit 1 --json startedAt --jq '.[] | .startedAt')
 
 echo $last_workflow_run
 echo $current_workflow_run
